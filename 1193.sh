@@ -1,5 +1,3 @@
-# SUBSTITUE 20000 WITH A RANDOM NUMBER BETWEEN 1-400000
-# When it finishes, choose a new number...
 while :; do
     rand=$(echo $RANDOM | md5sum | cut -f1 -d' ')
     len=$(shuf -i 3-32 -n 1)
