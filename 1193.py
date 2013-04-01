@@ -49,10 +49,8 @@ while True:
     nbits = 0
     # see how many bits are different
     for attempt_byte, target_byte in zip(attempt_bytes, target_bytes):
-        lbits = 0
         for b in range(8):
             if getbit(attempt_byte, b) != getbit(target_byte, b):
-                lbits += 1
                 nbits += 1
     best_hash = min(best_hash, nbits)
     if not nattempts % 1000:
