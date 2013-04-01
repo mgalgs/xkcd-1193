@@ -43,7 +43,7 @@ best_hash = 100000
 
 while True:
     attempt_len = random.choice(range(50))
-    attempt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(attempt_len))
+    attempt = ''.join(random.choice(string.printable) for x in range(attempt_len))
     attempt_hash = skein1024(bytes(attempt, 'ascii'), digest_bits=1024).hexdigest()
     attempt_bytes = hash2bytes(attempt_hash)
     nbits = 0
