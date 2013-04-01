@@ -20,7 +20,7 @@ from skein import skein1024
 def hash2bytes(thehash):
     return struct.unpack('128B', bytearray.fromhex(thehash))
 
-THRESHOLD=431                   # from http://almamater.xkcd.com/best.csv (search for usu.edu)
+THRESHOLD=421                   # from http://almamater.xkcd.com/best.csv (search for usu.edu)
 target = '5b4da95f5fa08280fc9879df44f418c8f9f12ba424b7757de02bbdfbae0d4c4fdf9317c80cc5fe04c6429073466cf29706b8c25999ddd2f6540d4475cc977b87f4757be023f19b8f4035d7722886b78869826de916a79cf9c94cc79cd4347d24b567aa3e2390a573a373a48a5e676640c79cc70197e1c5e7f902fb53ca1858b6'
 target_bytes = hash2bytes(target)
 
