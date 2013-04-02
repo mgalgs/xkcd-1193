@@ -143,40 +143,69 @@ static void sendit(char *buf)
                 perror("call to system failed");
 }
 
+static void swap_bytes(char *b1, char *b2)
+{
+    char tmp = *b1;
+    *b1 = *b2;
+    *b2 = tmp;
+}
+
+size_t best_off = 1024;
+char best[MAX_STR_LENGTH];
+
+static void try_msg(char *word, int wordlen)
+{
+    /* Call Hash */
+    HashReturn success;
+    BitSequence hash[HASH_BIT>>3];
+    memset(hash, 0, sizeof(hash)*sizeof(BitSequence));
+    Hash(HASH_BIT, (BitSequence *) word, wordlen<<3, hash);
+
+    /* Print results */
+    size_t current = off_bit_count_1024((u64b_t *) hash);
+    globalCount++;
+    if (best_off > current) {
+        strcpy(best, word);
+        best_off = current;
+        if (best_off < SUBMIT_THRESHOLD)
+            putchar('\n');
+        printf("%s : %lu\n", best, best_off);
+        if (best_off < SUBMIT_THRESHOLD)
+            sendit(best);
+    }
+}
+
+
+static void try_all_permutations(char s[], int d)
+{
+    int i;
+
+    if(d == strlen(s)) {
+        try_msg(s, d);
+    } else {
+        for(i=d;i<strlen(s);i++)
+            {
+                swap_bytes(&s[d], &s[i]);
+                try_all_permutations(s,d+1);
+                swap_bytes(&s[d], &s[i]);
+            }
+    }
+}
+
 int main(int argc, const char **argv)
 {
-  /* set up the signal handler */
-  signal (SIGINT,my_handler);
+    /* set up the signal handler */
+    signal (SIGINT,my_handler);
 
-    char best[MAX_STR_LENGTH];
     char word[MAX_STR_LENGTH];
-    size_t best_off = 1024;
 
     srand(time(0));
 
     while (infLoop) {
 	rand_str(word, sizeof(word));
-	
-	/* Call Hash */
-	HashReturn success;
-	BitSequence hash[HASH_BIT>>3];
-	memset(hash, 0, sizeof(hash)*sizeof(BitSequence));
-	Hash(HASH_BIT, (BitSequence *) word, strlen(word)<<3, hash);
-
-	/* Print results */
-	size_t current = off_bit_count_1024((u64b_t *) hash);
-	globalCount++;
-	if (best_off > current) {
-		strcpy(best, word);
-		best_off = current;
-                if (best_off < SUBMIT_THRESHOLD)
-                        putchar('\n');
-		printf("%s : %lu\n", best, best_off);
-                if (best_off < SUBMIT_THRESHOLD)
-                        sendit(best);
-	}
+	try_all_permutations(word, 0);
     }
 
-	return 0;
+    return 0;
 }
 
