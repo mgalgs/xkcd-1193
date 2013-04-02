@@ -75,8 +75,8 @@ void my_handler(int s) {
 /* A pretty naive version of random string generator
  * Maybe a faster random generator can be helpful here.
  * A GPU version? */
-const size_t MIN_STR_LENGTH = 4;
-const size_t MAX_STR_LENGTH = 10;
+#define MIN_STR_LENGTH 4
+#define MAX_STR_LENGTH 10
 char *rand_str(char *dst, int size)
 {
    static const char text[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
@@ -114,9 +114,9 @@ size_t off_bit_count_1024(u64b_t * hash) {
 /**
  * shellquote - Escape all ' chars and wrap the whole thing in ' chars
  */
-static void shellquote(char *inbuf, char *outbuf)
+static void shellquote(const char * const inbuf, char *outbuf)
 {
-        char *iter;
+        const char * iter;
         *outbuf++ = '\'';
         for (iter = inbuf; *iter; ) {
                 if (*iter == '\'') {
@@ -132,10 +132,10 @@ static void shellquote(char *inbuf, char *outbuf)
 
 static void sendit(char *buf)
 {
-        char cmd[2000];
-        char msg[MAX_STR_LENGTH];
+        static char cmd[2000];
+        static char msg[MAX_STR_LENGTH];
         shellquote(buf, &msg[0]);
-        sprintf(cmd, "%s %s", SENDIT_CMD, msg);
+        snprintf(cmd, 2000, "%s %s", SENDIT_CMD, msg);
         puts("will run:");
         puts(cmd);
         system(cmd);
@@ -167,11 +167,11 @@ int main(int argc, const char **argv)
 	if (best_off > current) {
 		strcpy(best, word);
 		best_off = current;
-		printf("%s : %lu\n", best, best_off);
-                if (best_off < SUBMIT_THRESHOLD) {
+                if (best_off < SUBMIT_THRESHOLD)
                         putchar('\n');
+		printf("%s : %lu\n", best, best_off);
+                if (best_off < SUBMIT_THRESHOLD)
                         sendit(best);
-                }
 	}
     }
 
