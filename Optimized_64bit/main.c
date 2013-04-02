@@ -7,6 +7,8 @@
 #include"SHA3api_ref.h"
 
 #define HASH_BIT 1024 
+#define SENDIT_CMD "../sendit.sh"
+#define SUBMIT_THRESHOLD 425
 
 /* the origianal hash */
 const u64b_t MATCH_INPUT[] =
@@ -109,6 +111,36 @@ size_t off_bit_count_1024(u64b_t * hash) {
 	return offcount;
 }
 
+/**
+ * shellquote - Escape all ' chars and wrap the whole thing in ' chars
+ */
+static void shellquote(char *inbuf, char *outbuf)
+{
+        char *iter;
+        *outbuf++ = '\'';
+        for (iter = inbuf; *iter; ) {
+                if (*iter == '\'') {
+                        *outbuf++ = '\'';
+                        *outbuf++ = '\\';
+                        *outbuf++ = '\'';
+                }
+                *outbuf++ = *iter++;
+        }
+        *outbuf++ = '\'';
+        *outbuf = '\0';
+}
+
+static void sendit(char *buf)
+{
+        char cmd[2000];
+        char msg[MAX_STR_LENGTH];
+        shellquote(buf, &msg[0]);
+        sprintf(cmd, "%s %s", SENDIT_CMD, msg);
+        puts("will run:");
+        puts(cmd);
+        system(cmd);
+}
+
 int main(int argc, const char **argv)
 {
   /* set up the signal handler */
@@ -136,6 +168,10 @@ int main(int argc, const char **argv)
 		strcpy(best, word);
 		best_off = current;
 		printf("%s : %lu\n", best, best_off);
+                if (best_off < SUBMIT_THRESHOLD) {
+                        putchar('\n');
+                        sendit(best);
+                }
 	}
     }
 

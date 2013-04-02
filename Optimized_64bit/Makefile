@@ -3,7 +3,9 @@ CC := gcc
 AR := ar cr
 LD := gcc
 
-CFLAGS = -m64 -O2 -std=c99
+CFLAGS = -O2 -std=c99
+# comment this out on 32 bit machines:
+CFLAGS += -m64
 
 SRC    = main.c	SHA3api_ref.c  skein_block.c  skein.c 
 OBJ    = $(SRC:.c=.o)
