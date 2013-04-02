@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 #include <signal.h>
 
 #include"SHA3api_ref.h"
@@ -76,8 +76,8 @@ void my_handler(int s) {
 /* A pretty naive version of random string generator
  * Maybe a faster random generator can be helpful here.
  * A GPU version? */
-#define MIN_STR_LENGTH 4
-#define MAX_STR_LENGTH 10
+#define MIN_STR_LENGTH 7
+#define MAX_STR_LENGTH 15
 char *rand_str(char *dst, int size)
 {
    static const char text[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
@@ -194,12 +194,17 @@ static void try_all_permutations(char s[], int d)
 
 int main(int argc, const char **argv)
 {
+	struct timeval tv;
     /* set up the signal handler */
     signal (SIGINT,my_handler);
 
     char word[MAX_STR_LENGTH];
 
-    srand(time(0));
+	gettimeofday(&tv, NULL);
+
+	printf("Seeding with %u\n", (unsigned int)tv.tv_usec);
+
+    srand((unsigned int)tv.tv_usec);
 
     while (infLoop) {
 	rand_str(word, sizeof(word));
