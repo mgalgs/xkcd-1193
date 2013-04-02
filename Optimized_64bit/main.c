@@ -139,7 +139,8 @@ static void sendit(char *buf)
         snprintf(cmd, 2000, "%s %s", SENDIT_CMD, msg);
         puts("will run:");
         puts(cmd);
-        system(cmd);
+        if (-1 == system(cmd))
+                perror("call to system failed");
 }
 
 int main(int argc, const char **argv)
