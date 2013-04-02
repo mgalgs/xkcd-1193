@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # REQUIRES:
 # pyskein http://pythonhosted.org/pyskein/
@@ -26,39 +26,54 @@ target_bytes = hash2bytes(target)
 
 def sendit(what, offby):
     print ()
-    print ('FOUND ONE!!!!!!!')
-    print ('GO TRY ' + what)
+    print ('New best hash found!')
+    print ('---BEGIN STRING:---')
+    print ('%s' % what)
+    print ('---END STRING---')
     print ('(should be off by %d)' % offby)
     print ()
 
-def getbit(b, bitnum):
-    return (b & (1 << bitnum)) >> bitnum
+
+def hashdiff(hash_Y_bytes,hash_Z_bytes):
+    nbits = 0
+    # see how many bits are different
+    for Y, Z in zip(hash_Y_bytes, hash_Z_bytes):
+        X = Y ^ Z
+        while(X):
+            X &= X - 1
+            nbits += 1
+    return nbits
+
+def newstring(strlen,candidate_chars):
+    theString = ''.join(random.choice(candidate_chars) for x in range(strlen))
+    return theString
 
 
 print()
 
+best_hash = 1024
+min_hash = ''
 nattempts = 0
-nuploads = 0
-best_hash = 100000
-
-candidate_chars = string.printable[:-5]
+n = 0
+candidate_chars = string.printable[:-6]
+strlen = 2
+attempt = newstring(strlen,candidate_chars)
 
 while True:
-    attempt_len = random.choice(range(50))
-    attempt = ''.join(random.choice(candidate_chars) for x in range(attempt_len))
     attempt_hash = skein1024(bytes(attempt, 'ascii'), digest_bits=1024).hexdigest()
     attempt_bytes = hash2bytes(attempt_hash)
-    nbits = 0
-    # see how many bits are different
-    for attempt_byte, target_byte in zip(attempt_bytes, target_bytes):
-        for b in range(8):
-            if getbit(attempt_byte, b) != getbit(target_byte, b):
-                nbits += 1
-    best_hash = min(best_hash, nbits)
-    if not nattempts % 1000:
-        sys.stdout.write('\r%d hashes compared far (best so far is %d). %d uploaded...   ' % (
-            nattempts, best_hash, nuploads))
+    d = hashdiff(attempt_bytes,target_bytes)
+    if d < best_hash:
+        best_hash = d
+        min_hash = attempt
+        if d < THRESHOLD:
+            sendit(attempt,d)
+            THRESHOLD = d
     nattempts += 1
-    if nbits < THRESHOLD:
-        sendit(attempt, nbits)
-        nuploads += 1
+    n += 1
+    if (n >> 10):
+        sys.stdout.write('\r%d hashes compared. Best so far is %d' % (nattempts, best_hash))
+        attempt = newstring(strlen-1,candidate_chars)
+        n = 0
+    attempt = attempt + random.choice(candidate_chars)
+
