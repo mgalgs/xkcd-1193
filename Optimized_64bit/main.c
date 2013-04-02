@@ -172,6 +172,7 @@ static void try_msg(char *word, int wordlen)
         printf("%s : %lu\n", best, best_off);
         if (best_off < SUBMIT_THRESHOLD)
             sendit(best);
+		fflush(stdout);
     }
 }
 
