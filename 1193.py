@@ -41,9 +41,11 @@ nattempts = 0
 nuploads = 0
 best_hash = 100000
 
+candidate_chars = string.printable[:-5]
+
 while True:
     attempt_len = random.choice(range(50))
-    attempt = ''.join(random.choice(string.printable) for x in range(attempt_len))
+    attempt = ''.join(random.choice(candidate_chars) for x in range(attempt_len))
     attempt_hash = skein1024(bytes(attempt, 'ascii'), digest_bits=1024).hexdigest()
     attempt_bytes = hash2bytes(attempt_hash)
     nbits = 0
