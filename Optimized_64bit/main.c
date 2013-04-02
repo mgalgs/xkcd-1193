@@ -8,7 +8,8 @@
 
 #define HASH_BIT 1024 
 #define SENDIT_CMD "../sendit.sh"
-#define SUBMIT_THRESHOLD 425
+/* from http://almamater.xkcd.com/best.csv */
+#define SUBMIT_THRESHOLD 398
 
 /* the origianal hash */
 const u64b_t MATCH_INPUT[] =
