@@ -7,8 +7,11 @@ CFLAGS = -O2 -std=c99
 # comment this out on 32 bit machines:
 CFLAGS += -m64
 
-SRC    = main.c	SHA3api_ref.c  skein_block.c  skein.c 
-OBJ    = $(SRC:.c=.o)
+SKEIN_BLOCK = skein_block_x64.o
+# SKEIN_BLOCK = skein_block.o
+
+SRC    = main.c	SHA3api_ref.c skein.c
+OBJ    = $(SRC:.c=.o) $(SKEIN_BLOCK)
 
 all: $(EXE)
 
